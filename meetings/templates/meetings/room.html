@@ -1,0 +1,1434 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ room.name }} | RealTime
+    </title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                #080d18;
+
+            color:
+                white;
+
+            min-height:
+                100vh;
+        }
+
+
+        button,
+        input {
+            font-family:
+                inherit;
+        }
+
+
+        /* ========================================
+           TOP BAR
+        ======================================== */
+
+        .topbar {
+            height: 72px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding:
+                0 28px;
+
+            background:
+                #0e1422;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.08);
+
+            position:
+                sticky;
+
+            top:
+                0;
+
+            z-index:
+                20;
+        }
+
+
+        .brand {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                12px;
+
+            font-size:
+                18px;
+
+            font-weight:
+                700;
+        }
+
+
+        .brand-icon {
+            width:
+                40px;
+
+            height:
+                40px;
+
+            border-radius:
+                12px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            background:
+                #6366f1;
+        }
+
+
+        .room-info {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                18px;
+        }
+
+
+        .room-name {
+            font-size:
+                14px;
+
+            color:
+                #cbd5e1;
+        }
+
+
+        .room-code {
+            padding:
+                8px 12px;
+
+            border-radius:
+                8px;
+
+            background:
+                rgba(99,102,241,0.12);
+
+            border:
+                1px solid rgba(99,102,241,0.25);
+
+            color:
+                #a5b4fc;
+
+            font-size:
+                12px;
+
+            letter-spacing:
+                1px;
+        }
+
+
+        .leave-button {
+            text-decoration:
+                none;
+
+            color:
+                white;
+
+            background:
+                #dc2626;
+
+            padding:
+                10px 16px;
+
+            border-radius:
+                9px;
+
+            font-size:
+                13px;
+
+            font-weight:
+                600;
+
+            transition:
+                0.2s;
+        }
+
+
+        .leave-button:hover {
+            background:
+                #b91c1c;
+        }
+
+
+        /* ========================================
+           PAGE
+        ======================================== */
+
+        .meeting-layout {
+            display:
+                grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                350px;
+
+            min-height:
+                calc(100vh - 72px);
+        }
+
+
+        /* ========================================
+           MAIN VIDEO AREA
+        ======================================== */
+
+        .video-section {
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            min-width:
+                0;
+
+            padding:
+                24px;
+        }
+
+
+        .video-header {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            margin-bottom:
+                18px;
+        }
+
+
+        .video-header h1 {
+            font-size:
+                22px;
+        }
+
+
+        .user-status {
+            color:
+                #94a3b8;
+
+            font-size:
+                13px;
+        }
+
+
+        .user-status strong {
+            color:
+                #cbd5e1;
+        }
+
+
+        /* ========================================
+           VIDEOS
+        ======================================== */
+
+        .video-grid {
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(320px, 1fr)
+                );
+
+            gap:
+                18px;
+
+            flex:
+                1;
+
+            align-content:
+                start;
+        }
+
+
+        .video-card {
+            position:
+                relative;
+
+            background:
+                #111827;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            border-radius:
+                16px;
+
+            overflow:
+                hidden;
+
+            min-height:
+                270px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+        }
+
+
+        .video-card video {
+            width:
+                100%;
+
+            height:
+                100%;
+
+            min-height:
+                270px;
+
+            object-fit:
+                cover;
+
+            background:
+                black;
+        }
+
+
+        .video-label {
+            position:
+                absolute;
+
+            bottom:
+                14px;
+
+            left:
+                14px;
+
+            background:
+                rgba(0,0,0,0.60);
+
+            backdrop-filter:
+                blur(8px);
+
+            padding:
+                7px 11px;
+
+            border-radius:
+                7px;
+
+            font-size:
+                12px;
+
+            z-index:
+                2;
+        }
+
+
+        /* Remote videos created by JS */
+
+        #remoteVideos {
+            display:
+                contents;
+        }
+
+
+        #remoteVideos > div {
+            position:
+                relative;
+
+            background:
+                #111827;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            border-radius:
+                16px;
+
+            overflow:
+                hidden;
+
+            min-height:
+                270px;
+        }
+
+
+        #remoteVideos > div p {
+            position:
+                absolute;
+
+            bottom:
+                14px;
+
+            left:
+                14px;
+
+            z-index:
+                3;
+
+            padding:
+                7px 11px;
+
+            border-radius:
+                7px;
+
+            background:
+                rgba(0,0,0,0.60);
+
+            color:
+                white;
+
+            font-size:
+                12px;
+        }
+
+
+        #remoteVideos video {
+            width:
+                100% !important;
+
+            height:
+                100%;
+
+            min-height:
+                270px;
+
+            object-fit:
+                cover;
+
+            background:
+                black;
+        }
+
+
+        /* ========================================
+           CONTROL BAR
+        ======================================== */
+
+        .control-bar {
+            margin-top:
+                22px;
+
+            display:
+                flex;
+
+            justify-content:
+                center;
+
+            align-items:
+                center;
+
+            gap:
+                12px;
+
+            padding:
+                14px;
+
+            border-radius:
+                16px;
+
+            background:
+                #0e1422;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+        }
+
+
+        .control-button {
+            min-width:
+                135px;
+
+            padding:
+                12px 16px;
+
+            border:
+                none;
+
+            border-radius:
+                10px;
+
+            background:
+                #1e293b;
+
+            color:
+                white;
+
+            cursor:
+                pointer;
+
+            font-size:
+                13px;
+
+            font-weight:
+                600;
+
+            transition:
+                0.2s;
+        }
+
+
+        .control-button:hover {
+            background:
+                #334155;
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        .share-button {
+            background:
+                #6366f1;
+        }
+
+
+        .share-button:hover {
+            background:
+                #4f46e5;
+        }
+
+
+        #cameraError {
+            color:
+                #fca5a5;
+
+            text-align:
+                center;
+
+            margin-top:
+                10px;
+
+            font-size:
+                12px;
+        }
+
+
+        /* ========================================
+           RIGHT SIDEBAR
+        ======================================== */
+
+        .sidebar {
+            background:
+                #0e1422;
+
+            border-left:
+                1px solid rgba(255,255,255,0.08);
+
+            padding:
+                22px;
+
+            overflow-y:
+                auto;
+        }
+
+
+        .panel {
+            padding:
+                20px;
+
+            background:
+                rgba(255,255,255,0.035);
+
+            border:
+                1px solid rgba(255,255,255,0.07);
+
+            border-radius:
+                14px;
+
+            margin-bottom:
+                20px;
+        }
+
+
+        .panel-title {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            margin-bottom:
+                16px;
+
+            font-size:
+                15px;
+
+            font-weight:
+                700;
+        }
+
+
+        .panel-description {
+            color:
+                #94a3b8;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.5;
+
+            margin-bottom:
+                15px;
+        }
+
+
+        /* ========================================
+           FILE SHARING
+        ======================================== */
+
+        #fileInput {
+            width:
+                100%;
+
+            padding:
+                10px;
+
+            margin-bottom:
+                12px;
+
+            border-radius:
+                9px;
+
+            border:
+                1px solid rgba(255,255,255,0.10);
+
+            background:
+                #111827;
+
+            color:
+                #cbd5e1;
+
+            font-size:
+                12px;
+        }
+
+
+        #fileInput::file-selector-button {
+            border:
+                none;
+
+            padding:
+                8px 10px;
+
+            margin-right:
+                10px;
+
+            border-radius:
+                7px;
+
+            background:
+                #334155;
+
+            color:
+                white;
+
+            cursor:
+                pointer;
+        }
+
+
+        #sendFile {
+            width:
+                100%;
+
+            padding:
+                11px;
+
+            border:
+                none;
+
+            border-radius:
+                9px;
+
+            background:
+                #6366f1;
+
+            color:
+                white;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                600;
+        }
+
+
+        #sendFile:hover {
+            background:
+                #4f46e5;
+        }
+
+
+        #fileStatus {
+            margin-top:
+                12px;
+
+            color:
+                #94a3b8;
+
+            font-size:
+                12px;
+        }
+
+
+        #receivedFiles {
+            margin-top:
+                12px;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            gap:
+                8px;
+        }
+
+
+        #receivedFiles div {
+            padding:
+                10px;
+
+            border-radius:
+                8px;
+
+            background:
+                rgba(255,255,255,0.04);
+
+            font-size:
+                12px;
+        }
+
+
+        #receivedFiles a {
+            color:
+                #a5b4fc;
+        }
+
+
+        /* ========================================
+           WHITEBOARD
+        ======================================== */
+
+        .whiteboard-section {
+            margin-top:
+                24px;
+
+            padding:
+                22px;
+
+            border-radius:
+                16px;
+
+            background:
+                #0e1422;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+        }
+
+
+        .whiteboard-header {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                15px;
+
+            margin-bottom:
+                16px;
+        }
+
+
+        .whiteboard-header h2 {
+            font-size:
+                17px;
+        }
+
+
+        .whiteboard-controls {
+            display:
+                flex;
+
+            gap:
+                8px;
+
+            flex-wrap:
+                wrap;
+        }
+
+
+        .whiteboard-button {
+            padding:
+                9px 13px;
+
+            border:
+                1px solid rgba(255,255,255,0.10);
+
+            border-radius:
+                8px;
+
+            background:
+                #1e293b;
+
+            color:
+                white;
+
+            cursor:
+                pointer;
+
+            font-size:
+                12px;
+        }
+
+
+        .whiteboard-button:hover {
+            background:
+                #334155;
+        }
+
+
+        #clearBoard {
+            background:
+                rgba(220,38,38,0.15);
+
+            color:
+                #fca5a5;
+
+            border-color:
+                rgba(220,38,38,0.25);
+        }
+
+
+        .canvas-wrapper {
+            background:
+                white;
+
+            border-radius:
+                12px;
+
+            overflow:
+                hidden;
+
+            width:
+                100%;
+        }
+
+
+        #whiteboard {
+            display:
+                block;
+
+            width:
+                100%;
+
+            height:
+                auto;
+
+            max-width:
+                100%;
+
+            background:
+                white;
+
+            cursor:
+                crosshair;
+        }
+
+
+        #whiteboardStatus {
+            color:
+                #94a3b8;
+
+            font-size:
+                12px;
+
+            margin-top:
+                10px;
+        }
+
+
+        /* ========================================
+           SECURITY PANEL
+        ======================================== */
+
+        .security-item {
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            color:
+                #94a3b8;
+
+            font-size:
+                12px;
+
+            margin-top:
+                10px;
+        }
+
+
+        .security-dot {
+            width:
+                8px;
+
+            height:
+                8px;
+
+            border-radius:
+                50%;
+
+            background:
+                #22c55e;
+        }
+
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+
+        @media (
+            max-width: 1050px
+        ) {
+
+            .meeting-layout {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .sidebar {
+                border-left:
+                    none;
+
+                border-top:
+                    1px solid rgba(255,255,255,0.08);
+
+                display:
+                    grid;
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+                gap:
+                    18px;
+            }
+
+
+            .panel {
+                margin-bottom:
+                    0;
+            }
+        }
+
+
+        @media (
+            max-width: 720px
+        ) {
+
+            .topbar {
+                height:
+                    auto;
+
+                padding:
+                    14px 18px;
+
+                align-items:
+                    flex-start;
+
+                gap:
+                    12px;
+            }
+
+
+            .room-info {
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-end;
+
+                gap:
+                    8px;
+            }
+
+
+            .room-name {
+                display:
+                    none;
+            }
+
+
+            .video-section {
+                padding:
+                    16px;
+            }
+
+
+            .video-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .control-bar {
+                flex-wrap:
+                    wrap;
+            }
+
+
+            .control-button {
+                min-width:
+                    0;
+
+                flex:
+                    1 1 130px;
+            }
+
+
+            .sidebar {
+                grid-template-columns:
+                    1fr;
+
+                padding:
+                    16px;
+            }
+
+
+            .whiteboard-header {
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
+            }
+        }
+
+
+    </style>
+
+</head>
+
+
+<body
+    data-room-code="{{ room.code }}"
+    data-user-id="{{ request.user.username }}"
+>
+
+
+    <!-- ========================================
+         TOP BAR
+    ======================================== -->
+
+    <header class="topbar">
+
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                ◉
+            </div>
+
+            RealTime
+
+        </div>
+
+
+        <div class="room-info">
+
+            <div class="room-name">
+                {{ room.name }}
+            </div>
+
+
+            <div class="room-code">
+                ROOM {{ room.code }}
+            </div>
+
+
+            <a
+                href="/"
+                class="leave-button"
+            >
+                Leave Meeting
+            </a>
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- ========================================
+         MEETING LAYOUT
+    ======================================== -->
+
+    <main class="meeting-layout">
+
+
+        <!-- ====================================
+             LEFT SIDE
+        ===================================== -->
+
+        <section class="video-section">
+
+
+            <div class="video-header">
+
+                <h1>
+                    {{ room.name }}
+                </h1>
+
+
+                <div class="user-status">
+
+                    Signed in as
+
+                    <strong>
+                        {{ request.user.username }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- VIDEO GRID -->
+
+            <div class="video-grid">
+
+
+                <!-- LOCAL VIDEO -->
+
+                <div class="video-card">
+
+                    <video
+                        id="localVideo"
+                        autoplay
+                        playsinline
+                        muted
+                    >
+                    </video>
+
+
+                    <div class="video-label">
+
+                        {{ request.user.username }}
+
+                        (You)
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- REMOTE VIDEOS -->
+
+                <div id="remoteVideos">
+                </div>
+
+
+            </div>
+
+
+
+            <!-- CONTROLS -->
+
+            <div class="control-bar">
+
+
+                <button
+                    id="toggleMic"
+                    class="control-button"
+                >
+                    🎤 Mute Microphone
+                </button>
+
+
+                <button
+                    id="toggleCamera"
+                    class="control-button"
+                >
+                    📹 Turn Camera Off
+                </button>
+
+
+                <button
+                    id="shareScreen"
+                    class="control-button share-button"
+                >
+                    🖥 Share Screen
+                </button>
+
+
+            </div>
+
+
+            <p id="cameraError"></p>
+
+
+
+            <!-- ====================================
+                 WHITEBOARD
+            ===================================== -->
+
+            <section class="whiteboard-section">
+
+
+                <div class="whiteboard-header">
+
+
+                    <h2>
+                        ✏️ Collaborative Whiteboard
+                    </h2>
+
+
+                    <div class="whiteboard-controls">
+
+
+                        <button
+                            id="drawMode"
+                            class="whiteboard-button"
+                        >
+                            ✏️ Draw
+                        </button>
+
+
+                        <button
+                            id="textMode"
+                            class="whiteboard-button"
+                        >
+                            T Write
+                        </button>
+
+
+                        <button
+                            id="clearBoard"
+                            class="whiteboard-button"
+                        >
+                            Clear Board
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="canvas-wrapper">
+
+                    <canvas
+                        id="whiteboard"
+                        width="800"
+                        height="400"
+                    >
+                    </canvas>
+
+                </div>
+
+
+                <p id="whiteboardStatus">
+                    Whiteboard ready.
+                </p>
+
+
+            </section>
+
+
+        </section>
+
+
+
+        <!-- ====================================
+             RIGHT SIDEBAR
+        ===================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- FILE SHARING -->
+
+            <section class="panel">
+
+
+                <div class="panel-title">
+                    📁 File Sharing
+                </div>
+
+
+                <p class="panel-description">
+                    Send files directly to the
+                    participants connected to this meeting.
+                </p>
+
+
+                <input
+                    type="file"
+                    id="fileInput"
+                >
+
+
+                <button id="sendFile">
+                    Send File
+                </button>
+
+
+                <p id="fileStatus">
+                    Choose a file to share.
+                </p>
+
+
+                <div id="receivedFiles">
+                </div>
+
+
+            </section>
+
+
+
+            <!-- MEETING INFORMATION -->
+
+            <section class="panel">
+
+
+                <div class="panel-title">
+                    👥 Meeting Information
+                </div>
+
+
+                <div class="security-item">
+
+                    <span class="security-dot"></span>
+
+                    Connected as
+                    {{ request.user.username }}
+
+                </div>
+
+
+                <div class="security-item">
+
+                    <span class="security-dot"></span>
+
+                    Room code:
+                    {{ room.code }}
+
+                </div>
+
+
+                <div class="security-item">
+
+                    <span class="security-dot"></span>
+
+                    Firebase authentication active
+
+                </div>
+
+
+                <div class="security-item">
+
+                    <span class="security-dot"></span>
+
+                    WebRTC secure connection
+
+                </div>
+
+
+            </section>
+
+
+        </aside>
+
+
+    </main>
+
+
+
+    <!-- ========================================
+         ROOM JAVASCRIPT
+    ======================================== -->
+
+    <script
+        type="module"
+        src="{% static 'meetings/js/room.js' %}"
+    >
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RealTime Communication</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(99, 102, 241, 0.18),
+                    transparent 35%
+                ),
+                #0b1020;
+
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+
+        /* ========================================
+           NAVBAR
+        ======================================== */
+
+        .navbar {
+            height: 78px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 7%;
+
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+
+            background: rgba(11, 16, 32, 0.85);
+
+            backdrop-filter: blur(14px);
+        }
+
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            font-size: 21px;
+            font-weight: 700;
+
+            text-decoration: none;
+            color: white;
+        }
+
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #6366f1;
+
+            border-radius: 12px;
+
+            font-size: 20px;
+        }
+
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6366f1,
+                    #8b5cf6
+                );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+
+        .logout-form {
+            margin: 0;
+        }
+
+
+        .logout-button {
+            padding: 10px 18px;
+
+            border: 1px solid rgba(255,255,255,0.15);
+
+            border-radius: 9px;
+
+            background: transparent;
+
+            color: #e2e8f0;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+
+        .logout-button:hover {
+            background: rgba(255,255,255,0.08);
+
+            border-color: rgba(255,255,255,0.3);
+        }
+
+
+        /* ========================================
+           MAIN
+        ======================================== */
+
+        .container {
+            width: min(1150px, 90%);
+
+            margin: auto;
+
+            padding: 80px 0;
+        }
+
+
+        .hero {
+            text-align: center;
+
+            max-width: 760px;
+
+            margin: 0 auto 65px;
+        }
+
+
+        .welcome-badge {
+            display: inline-block;
+
+            padding: 7px 14px;
+
+            margin-bottom: 20px;
+
+            border: 1px solid rgba(99,102,241,0.35);
+
+            border-radius: 30px;
+
+            background: rgba(99,102,241,0.10);
+
+            color: #a5b4fc;
+
+            font-size: 13px;
+        }
+
+
+        .hero h1 {
+            font-size: clamp(38px, 5vw, 58px);
+
+            line-height: 1.1;
+
+            margin-bottom: 22px;
+
+            letter-spacing: -1px;
+        }
+
+
+        .highlight {
+            background:
+                linear-gradient(
+                    90deg,
+                    #818cf8,
+                    #c084fc
+                );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        .hero p {
+            color: #94a3b8;
+
+            font-size: 17px;
+
+            line-height: 1.7;
+
+            max-width: 620px;
+
+            margin: auto;
+        }
+
+
+        /* ========================================
+           ACTION CARDS
+        ======================================== */
+
+        .meeting-actions {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 25px;
+
+            max-width: 900px;
+
+            margin: auto;
+        }
+
+
+        .action-card {
+            position: relative;
+
+            padding: 38px;
+
+            min-height: 300px;
+
+            border-radius: 20px;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            border:
+                1px solid rgba(255,255,255,0.09);
+
+            transition:
+                transform 0.25s ease,
+                border-color 0.25s ease,
+                background 0.25s ease;
+
+            overflow: hidden;
+        }
+
+
+        .action-card:hover {
+            transform: translateY(-6px);
+
+            border-color: rgba(129,140,248,0.45);
+
+            background: rgba(255,255,255,0.065);
+        }
+
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+
+            border-radius: 16px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                rgba(99,102,241,0.16);
+
+            color: #a5b4fc;
+
+            font-size: 27px;
+
+            margin-bottom: 27px;
+        }
+
+
+        .action-card h2 {
+            font-size: 24px;
+
+            margin-bottom: 13px;
+        }
+
+
+        .action-card p {
+            color: #94a3b8;
+
+            line-height: 1.6;
+
+            font-size: 15px;
+
+            min-height: 72px;
+
+            margin-bottom: 28px;
+        }
+
+
+        .action-button {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            width: 100%;
+
+            padding: 14px 20px;
+
+            border-radius: 10px;
+
+            text-decoration: none;
+
+            font-size: 15px;
+            font-weight: 600;
+
+            transition: 0.2s ease;
+        }
+
+
+        .primary-button {
+            background: #6366f1;
+
+            color: white;
+        }
+
+
+        .primary-button:hover {
+            background: #4f46e5;
+        }
+
+
+        .secondary-button {
+            color: white;
+
+            border:
+                1px solid rgba(255,255,255,0.15);
+
+            background:
+                rgba(255,255,255,0.04);
+        }
+
+
+        .secondary-button:hover {
+            background:
+                rgba(255,255,255,0.09);
+        }
+
+
+        /* ========================================
+           FEATURES
+        ======================================== */
+
+        .features {
+            margin-top: 90px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .feature {
+            text-align: center;
+
+            padding: 22px 15px;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+        }
+
+
+        .feature-icon {
+            font-size: 24px;
+
+            margin-bottom: 11px;
+        }
+
+
+        .feature strong {
+            display: block;
+
+            color: #e2e8f0;
+
+            margin-bottom: 7px;
+
+            font-size: 14px;
+        }
+
+
+        /* ========================================
+           FOOTER
+        ======================================== */
+
+        footer {
+            text-align: center;
+
+            color: #64748b;
+
+            padding: 30px;
+
+            font-size: 13px;
+
+            border-top:
+                1px solid rgba(255,255,255,0.06);
+        }
+
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+
+        @media (max-width: 760px) {
+
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .user-badge span {
+                display: none;
+            }
+
+            .container {
+                padding-top: 55px;
+            }
+
+            .meeting-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .hero h1 {
+                font-size: 38px;
+            }
+        }
+
+
+        @media (max-width: 480px) {
+
+            .brand {
+                font-size: 16px;
+            }
+
+            .logout-button {
+                padding: 8px 12px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .action-card {
+                padding: 28px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- ========================================
+         NAVBAR
+    ======================================== -->
+
+    <nav class="navbar">
+
+        <a href="/" class="brand">
+
+            <div class="brand-icon">
+                ◉
+            </div>
+
+            <span>
+                RealTime
+            </span>
+
+        </a>
+
+
+        <div class="navbar-right">
+
+            <div class="user-badge">
+
+                <div class="avatar">
+                    {{ request.user.username|first }}
+                </div>
+
+                <span>
+                    {{ request.user.username }}
+                </span>
+
+            </div>
+
+
+            <form
+                class="logout-form"
+                method="POST"
+                action="{% url 'logout' %}"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    class="logout-button"
+                    type="submit"
+                >
+                    Logout
+                </button>
+
+            </form>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- ========================================
+         MAIN
+    ======================================== -->
+
+    <main class="container">
+
+
+        <!-- HERO -->
+
+        <section class="hero">
+
+            <div class="welcome-badge">
+                ● Secure real-time collaboration
+            </div>
+
+
+            <h1>
+                Welcome,
+                <span class="highlight">
+                    {{ request.user.username }}
+                </span>
+            </h1>
+
+
+            <p>
+                Start a secure video meeting or join an
+                existing room to communicate, collaborate,
+                share files, present your screen and work
+                together in real time.
+            </p>
+
+        </section>
+
+
+
+        <!-- MEETING ACTIONS -->
+
+        <section class="meeting-actions">
+
+
+            <!-- CREATE ROOM -->
+
+            <div class="action-card">
+
+                <div class="card-icon">
+                    ＋
+                </div>
+
+
+                <h2>
+                    Create a Meeting
+                </h2>
+
+
+                <p>
+                    Start a new private meeting room and
+                    invite other participants using your
+                    unique room code.
+                </p>
+
+
+                <a
+                    href="{% url 'create_room' %}"
+                    class="action-button primary-button"
+                >
+                    Create Meeting
+                    <span>→</span>
+                </a>
+
+            </div>
+
+
+
+            <!-- JOIN ROOM -->
+
+            <div class="action-card">
+
+                <div class="card-icon">
+                    ↗
+                </div>
+
+
+                <h2>
+                    Join a Meeting
+                </h2>
+
+
+                <p>
+                    Already have a meeting code?
+                    Enter the room and connect instantly
+                    with the other participants.
+                </p>
+
+
+                <a
+                    href="{% url 'join_room' %}"
+                    class="action-button secondary-button"
+                >
+                    Join Meeting
+                    <span>→</span>
+                </a>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- FEATURES -->
+
+        <section class="features">
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    📹
+                </div>
+
+                <strong>
+                    Video Calls
+                </strong>
+
+                Real-time WebRTC communication.
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🖥️
+                </div>
+
+                <strong>
+                    Screen Sharing
+                </strong>
+
+                Present your screen instantly.
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    📁
+                </div>
+
+                <strong>
+                    File Sharing
+                </strong>
+
+                Send files directly to participants.
+
+            </div>
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    ✏️
+                </div>
+
+                <strong>
+                    Whiteboard
+                </strong>
+
+                Collaborate visually in real time.
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ========================================
+         FOOTER
+    ======================================== -->
+
+    <footer>
+        RealTime Communication · Secure collaboration powered by Django,
+        Firebase & WebRTC
+    </footer>
+
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+# Virtual environment
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django local database
+db.sqlite3
+
+# Environment variables
+.env
+
+# Firebase private credentials
+secrets/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

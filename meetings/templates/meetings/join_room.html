@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Join Meeting</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(99, 102, 241, 0.18),
+                    transparent 35%
+                ),
+                #0b1020;
+        }
+
+        .navbar {
+            height: 78px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 7%;
+
+            background: rgba(11, 16, 32, 0.85);
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.08);
+
+            backdrop-filter: blur(14px);
+        }
+
+        .brand {
+            text-decoration: none;
+            color: white;
+
+            font-size: 21px;
+            font-weight: 700;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 12px;
+
+            background: #6366f1;
+        }
+
+        .back-link {
+            text-decoration: none;
+
+            color: #cbd5e1;
+
+            padding: 10px 16px;
+
+            border-radius: 9px;
+
+            border:
+                1px solid rgba(255,255,255,0.12);
+
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            background:
+                rgba(255,255,255,0.07);
+        }
+
+        .page-container {
+            width: min(520px, 90%);
+
+            margin: auto;
+
+            padding: 90px 0;
+        }
+
+        .meeting-card {
+            padding: 42px;
+
+            background:
+                rgba(255,255,255,0.045);
+
+            border:
+                1px solid rgba(255,255,255,0.09);
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 25px 60px rgba(0,0,0,0.25);
+        }
+
+        .icon {
+            width: 64px;
+            height: 64px;
+
+            margin-bottom: 25px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 16px;
+
+            background:
+                rgba(99,102,241,0.17);
+
+            color: #a5b4fc;
+
+            font-size: 28px;
+        }
+
+        h1 {
+            font-size: 30px;
+
+            margin-bottom: 12px;
+        }
+
+        .description {
+            color: #94a3b8;
+
+            line-height: 1.6;
+
+            margin-bottom: 32px;
+        }
+
+        .input-label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            color: #cbd5e1;
+
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .room-input {
+            width: 100%;
+
+            padding: 15px 16px;
+
+            margin-bottom: 22px;
+
+            border-radius: 10px;
+
+            border:
+                1px solid rgba(255,255,255,0.14);
+
+            background:
+                rgba(255,255,255,0.05);
+
+            color: white;
+
+            outline: none;
+
+            font-size: 15px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            transition: 0.2s;
+        }
+
+        .room-input::placeholder {
+            color: #64748b;
+
+            text-transform: none;
+
+            letter-spacing: normal;
+        }
+
+        .room-input:focus {
+            border-color: #6366f1;
+
+            box-shadow:
+                0 0 0 3px rgba(99,102,241,0.15);
+        }
+
+        .submit-button {
+            width: 100%;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #6366f1;
+
+            color: white;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .submit-button:hover {
+            background: #4f46e5;
+
+            transform: translateY(-1px);
+        }
+
+        .help-text {
+            margin-top: 22px;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(99,102,241,0.07);
+
+            border:
+                1px solid rgba(99,102,241,0.13);
+
+            color: #94a3b8;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        @media (max-width: 520px) {
+
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .meeting-card {
+                padding: 30px 24px;
+            }
+
+            .page-container {
+                padding-top: 55px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+
+        <a href="/" class="brand">
+
+            <div class="brand-icon">
+                ◉
+            </div>
+
+            RealTime
+
+        </a>
+
+        <a href="/" class="back-link">
+            ← Dashboard
+        </a>
+
+    </nav>
+
+
+    <main class="page-container">
+
+        <section class="meeting-card">
+
+            <div class="icon">
+                ↗
+            </div>
+
+            <h1>
+                Join a Meeting
+            </h1>
+
+            <p class="description">
+                Enter the room code shared with you to
+                connect with the other participants.
+            </p>
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                <label
+                    for="room-code"
+                    class="input-label"
+                >
+                    Meeting Code
+                </label>
+
+
+                <input
+                    id="room-code"
+                    class="room-input"
+                    type="text"
+                    name="code"
+                    placeholder="Enter room code"
+                    autocomplete="off"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                >
+                    Join Meeting →
+                </button>
+
+            </form>
+
+
+            <div class="help-text">
+                💡 Ask the meeting creator for the unique
+                room code, then enter it above to join.
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
